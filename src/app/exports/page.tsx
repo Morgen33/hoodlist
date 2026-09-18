@@ -6,22 +6,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Field, inputClass } from "@/components/ui/Field";
 import { useStore } from "@/components/providers/StoreProvider";
 import { buildAllowlist, summarizeAllowlist } from "@/lib/campaign/engine";
+import { downloadCsv } from "@/lib/csv";
 import { formatNumber } from "@/lib/format";
-
-function toCsv(rows: string[][]): string {
-  return rows
-    .map((row) =>
-      row
-        .map((cell) => {
-          if (cell.includes(",") || cell.includes('"')) {
-            return `"${cell.replaceAll('"', '""')}"`;
-          }
-          return cell;
-        })
-        .join(","),
-    )
-    .join("\n");
-}
 
 export default function ExportsPage() {
   const { campaigns, snapshots, saveCampaign } = useStore();
@@ -43,7 +29,7 @@ export default function ExportsPage() {
 
   const download = () => {
     if (!campaign) return;
-    const csv = toCsv([
+    downloadCsv(`${campaign.project.campaignName || "hoodlist"}.csv`, [
       ["wallet", "ccff00_held", "allocation", "token_ids"],
       ...entries.map((entry) => [
         entry.wallet,
@@ -52,13 +38,6 @@ export default function ExportsPage() {
         entry.tokenIds.map((id) => `#${id}`).join(" "),
       ]),
     ]);
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${campaign.project.campaignName || "hoodlist"}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
     saveCampaign({
       ...campaign,
       eligibleWalletCount: summary.wallets,
