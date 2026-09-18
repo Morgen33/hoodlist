@@ -23,6 +23,9 @@ export default function HoldersPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [details, setDetails] = useState<Record<string, Holder>>({});
 
+  const [page, setPage] = useState(1);
+  const pageSize = 250;
+
   const load = (refresh = false) => {
     setLoading(true);
     setError(null);
@@ -31,6 +34,7 @@ export default function HoldersPage() {
         const json = (await response.json()) as HoldersResponse;
         if (!response.ok) throw new Error(json.error ?? "Lookup failed");
         setData(json);
+        setPage(1);
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Lookup failed");
@@ -42,8 +46,49 @@ export default function HoldersPage() {
     const holders = data?.holders ?? [];
     const q = query.trim().toLowerCase();
     if (!q) return holders;
-    return holders.filter((holder) => holder.wallet.toLowerCase().includes(q));
+    return holders.filter(
+      (holder) =>
+        holder.wallet.toLowerCase().includes(q) ||
+        (holder.ens ?? "").toLowerCase().includes(q),
+    );
   }, [data, query]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const visible = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
+  const downloadAll = () => {
+    if (!data) return;
+    const rows = [
+      ["wallet", "ccff00_held", "token_ids"],
+      ...data.holders.map((holder) => [
+        holder.wallet,
+        String(holder.balance),
+        holder.tokenIds.map((id) => `#${id}`).join(" "),
+      ]),
+    ];
+    const csv = rows
+      .map((row) =>
+        row
+          .map((cell) =>
+            cell.includes(",") || cell.includes('"')
+              ? `"${cell.replaceAll('"', '""')}"`
+              : cell,
+          )
+          .join(","),
+      )
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `ccff00-holders-${data.uniqueWallets}-wallets.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const openWallet = async (wallet: string) => {
     setExpanded((current) => (current === wallet ? null : wallet));
@@ -65,9 +110,16 @@ export default function HoldersPage() {
             with a balance of 10 — never as 10 separate entries.
           </p>
         </div>
-        <Button variant="secondary" onClick={() => load(true)} disabled={loading}>
-          {loading ? "Loading…" : data ? "Refresh" : "Pull holders"}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" onClick={() => load(true)} disabled={loading}>
+            {loading ? "Loading…" : data ? "Refresh" : "Pull holders"}
+          </Button>
+          {data ? (
+            <Button variant="secondary" onClick={downloadAll}>
+              Download all wallets
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       {data ? (
@@ -85,7 +137,10 @@ export default function HoldersPage() {
         className={inputClass}
         placeholder="Search wallet"
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => {
+          setQuery(event.target.value);
+          setPage(1);
+        }}
       />
 
       {error ? (
@@ -126,7 +181,7 @@ export default function HoldersPage() {
             <span>CCFF00 held</span>
             <span>Token IDs</span>
           </div>
-          {filtered.slice(0, 200).map((holder) => {
+          {visible.map((holder) => {
             const extra = details[holder.wallet];
             const open = expanded === holder.wallet;
             const tokenIds = extra?.tokenIds ?? holder.tokenIds;
@@ -158,11 +213,40 @@ export default function HoldersPage() {
           })}
         </div>
       ) : null}
-      {filtered.length > 200 ? (
-        <p className="text-xs text-muted">
-          Showing 200 of {formatNumber(filtered.length)} wallets. Search to
-          narrow the list.
-        </p>
+      {filtered.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
+          <p>
+            Showing {formatNumber((currentPage - 1) * pageSize + 1)}–
+            {formatNumber(Math.min(currentPage * pageSize, filtered.length))} of{" "}
+            {formatNumber(filtered.length)} wallets
+            {data && filtered.length === data.holders.length
+              ? " — complete CCFF00 holder set"
+              : ""}
+          </p>
+          {pageCount > 1 ? (
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                disabled={currentPage <= 1}
+                onClick={() => setPage((value) => Math.max(1, value - 1))}
+              >
+                Previous
+              </Button>
+              <span className="self-center text-xs uppercase tracking-[0.12em]">
+                Page {currentPage} of {pageCount}
+              </span>
+              <Button
+                variant="ghost"
+                disabled={currentPage >= pageCount}
+                onClick={() =>
+                  setPage((value) => Math.min(pageCount, value + 1))
+                }
+              >
+                Next
+              </Button>
+            </div>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );
