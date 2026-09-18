@@ -4,18 +4,20 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { createDraftCampaign } from "@/lib/campaign/defaults";
 import type { HoodlistCampaign } from "@/lib/campaign/types";
-import type { HolderSnapshot } from "@/lib/holders/types";
+import { parseSnapshot } from "@/lib/holders/snapshot";
+import type { HolderSnapshot, HolderSnapshotMeta } from "@/lib/holders/types";
 import { readJson, STORE_KEYS, writeJson } from "@/lib/storage";
 
 type StoreState = {
   campaigns: HoodlistCampaign[];
-  snapshots: HolderSnapshot[];
+  snapshots: HolderSnapshotMeta[];
   draft: HoodlistCampaign | null;
 };
 
@@ -36,7 +38,6 @@ function emit() {
 function persist(next: StoreState) {
   memory = next;
   writeJson(STORE_KEYS.campaigns, next.campaigns);
-  writeJson(STORE_KEYS.snapshots, next.snapshots);
   writeJson(STORE_KEYS.draft, next.draft);
   emit();
 }
@@ -44,7 +45,7 @@ function persist(next: StoreState) {
 function load(): StoreState {
   return {
     campaigns: readJson<HoodlistCampaign[]>(STORE_KEYS.campaigns, []),
-    snapshots: readJson<HolderSnapshot[]>(STORE_KEYS.snapshots, []),
+    snapshots: [],
     draft: readJson<HoodlistCampaign | null>(STORE_KEYS.draft, null),
   };
 }
@@ -72,13 +73,66 @@ type StoreApi = StoreState & {
   startDraft: () => HoodlistCampaign;
   saveCampaign: (campaign: HoodlistCampaign) => void;
   deleteCampaign: (id: string) => void;
-  saveSnapshot: (snapshot: HolderSnapshot) => void;
+  takeSnapshot: () => Promise<HolderSnapshotMeta>;
 };
 
 const StoreContext = createContext<StoreApi | null>(null);
 
+async function fetchSnapshotList(): Promise<HolderSnapshotMeta[]> {
+  const response = await fetch("/api/snapshots");
+  const json = (await response.json()) as {
+    snapshots?: HolderSnapshotMeta[];
+    error?: string;
+  };
+  if (!response.ok) throw new Error(json.error ?? "Could not load snapshots.");
+  return json.snapshots ?? [];
+}
+
+async function migrateLocalSnapshots(remote: HolderSnapshotMeta[]) {
+  if (remote.length > 0) return remote;
+  const local = readJson<unknown[]>(STORE_KEYS.snapshots, []);
+  if (local.length === 0) return remote;
+
+  const migrated: HolderSnapshotMeta[] = [];
+  for (const item of local) {
+    const snapshot = parseSnapshot(item);
+    if (!snapshot) continue;
+    const response = await fetch("/api/snapshots", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ snapshot }),
+    });
+    const json = (await response.json()) as {
+      snapshot?: HolderSnapshotMeta;
+      error?: string;
+    };
+    if (!response.ok || !json.snapshot) {
+      throw new Error(json.error ?? "Could not migrate local snapshots.");
+    }
+    migrated.push(json.snapshot);
+  }
+  window.localStorage.removeItem(STORE_KEYS.snapshots);
+  return migrated.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
 export function StoreProvider({ children }: { children: ReactNode }) {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const remote = await fetchSnapshotList();
+        const snapshots = await migrateLocalSnapshots(remote);
+        if (!cancelled) persist({ ...memory, snapshots });
+      } catch {
+        if (!cancelled) emit();
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const hydrate = useCallback(() => {
     persist(load());
@@ -111,11 +165,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const saveSnapshot = useCallback((snapshot: HolderSnapshot) => {
+  const takeSnapshot = useCallback(async () => {
+    const response = await fetch("/api/snapshots", { method: "POST" });
+    const json = (await response.json()) as {
+      snapshot?: HolderSnapshotMeta;
+      error?: string;
+    };
+    if (!response.ok || !json.snapshot) {
+      throw new Error(json.error ?? "Snapshot failed");
+    }
     persist({
       ...memory,
-      snapshots: [snapshot, ...memory.snapshots],
+      snapshots: [
+        json.snapshot,
+        ...memory.snapshots.filter((item) => item.id !== json.snapshot?.id),
+      ],
     });
+    return json.snapshot;
   }, []);
 
   const value = useMemo<StoreApi>(
@@ -126,7 +192,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       startDraft,
       saveCampaign,
       deleteCampaign,
-      saveSnapshot,
+      takeSnapshot,
     }),
     [
       state,
@@ -135,7 +201,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       startDraft,
       saveCampaign,
       deleteCampaign,
-      saveSnapshot,
+      takeSnapshot,
     ],
   );
 
@@ -148,4 +214,18 @@ export function useStore() {
   const ctx = useContext(StoreContext);
   if (!ctx) throw new Error("useStore must be used inside StoreProvider");
   return ctx;
+}
+
+export async function fetchSnapshotById(id: string): Promise<HolderSnapshot> {
+  const response = await fetch(`/api/snapshots/${id}`);
+  const json = (await response.json()) as {
+    snapshot?: HolderSnapshot;
+    error?: string;
+  };
+  if (!response.ok || !json.snapshot) {
+    throw new Error(json.error ?? "Snapshot not found.");
+  }
+  const parsed = parseSnapshot(json.snapshot);
+  if (!parsed) throw new Error("Snapshot not found.");
+  return parsed;
 }

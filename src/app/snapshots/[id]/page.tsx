@@ -1,12 +1,13 @@
 "use client";
 
-import { use, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { inputClass } from "@/components/ui/Field";
-import { useStore } from "@/components/providers/StoreProvider";
+import { fetchSnapshotById } from "@/components/providers/StoreProvider";
 import { downloadCsv } from "@/lib/csv";
 import { formatNumber, formatTokenIds, shortWallet } from "@/lib/format";
+import type { HolderSnapshot } from "@/lib/holders/types";
 
 export default function SnapshotDetailPage({
   params,
@@ -14,11 +15,27 @@ export default function SnapshotDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { snapshots } = useStore();
-  const snapshot = snapshots.find((item) => item.id === id);
+  const [snapshot, setSnapshot] = useState<HolderSnapshot | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 250;
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchSnapshotById(id)
+      .then((next) => {
+        if (!cancelled) setSnapshot(next);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Snapshot not found.");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
   const filtered = useMemo(() => {
     if (!snapshot) return [];
@@ -31,12 +48,21 @@ export default function SnapshotDetailPage({
     );
   }, [snapshot, query]);
 
-  if (!snapshot) {
+  if (error) {
     return (
       <EmptyState
         title="Snapshot not found"
-        body="This snapshot is stored in this browser. If you took it on another device, it will not appear here."
+        body="This snapshot is stored on Hoodlist. If the link is old, go back to Snapshots and open a current one."
         action={<Button href="/snapshots">Back to Snapshots</Button>}
+      />
+    );
+  }
+
+  if (!snapshot) {
+    return (
+      <EmptyState
+        title="Loading snapshot"
+        body="Pulling the frozen CCFF00 wallet list."
       />
     );
   }

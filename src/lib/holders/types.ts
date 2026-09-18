@@ -17,7 +17,7 @@ export type Holder = {
   ens: string | null;
 };
 
-export type HolderSnapshot = {
+export type HolderSnapshotMeta = {
   id: string;
   createdAt: string;
   label: string;
@@ -26,5 +26,8 @@ export type HolderSnapshot = {
   contract: string;
   uniqueWallets: number;
   totalNfts: number;
+};
+
+export type HolderSnapshot = HolderSnapshotMeta & {
   holders: Holder[];
 };

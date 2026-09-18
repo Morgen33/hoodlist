@@ -1,5 +1,5 @@
 import type { HoodlistCampaign } from "@/lib/campaign/types";
-import type { HolderSnapshot } from "@/lib/holders/types";
+import type { HolderSnapshotMeta } from "@/lib/holders/types";
 
 export const STORE_KEYS = {
   campaigns: "hoodlist:campaigns",
@@ -17,7 +17,7 @@ export type PlatformStats = {
 
 export function statsFromStore(
   campaigns: HoodlistCampaign[],
-  snapshots: HolderSnapshot[],
+  snapshots: HolderSnapshotMeta[],
   liveHolderCount: number | null,
 ): PlatformStats {
   const published = campaigns.filter((campaign) => campaign.status === "published");

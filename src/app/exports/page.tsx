@@ -1,24 +1,46 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Field, inputClass } from "@/components/ui/Field";
-import { useStore } from "@/components/providers/StoreProvider";
+import {
+  fetchSnapshotById,
+  useStore,
+} from "@/components/providers/StoreProvider";
 import { buildAllowlist, summarizeAllowlist } from "@/lib/campaign/engine";
 import { downloadCsv } from "@/lib/csv";
 import { formatNumber } from "@/lib/format";
+import type { HolderSnapshot } from "@/lib/holders/types";
 
 export default function ExportsPage() {
   const { campaigns, snapshots, saveCampaign } = useStore();
   const [campaignId, setCampaignId] = useState<string | null>(null);
   const [snapshotId, setSnapshotId] = useState<string | null>(null);
+  const [snapshot, setSnapshot] = useState<HolderSnapshot | null>(null);
 
   const selectedCampaignId = campaignId ?? campaigns[0]?.id ?? "";
   const selectedSnapshotId = snapshotId ?? snapshots[0]?.id ?? "";
 
   const campaign = campaigns.find((item) => item.id === selectedCampaignId) ?? null;
-  const snapshot = snapshots.find((item) => item.id === selectedSnapshotId) ?? null;
+
+  useEffect(() => {
+    if (!selectedSnapshotId) {
+      setSnapshot(null);
+      return;
+    }
+    let cancelled = false;
+    void fetchSnapshotById(selectedSnapshotId)
+      .then((next) => {
+        if (!cancelled) setSnapshot(next);
+      })
+      .catch(() => {
+        if (!cancelled) setSnapshot(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedSnapshotId]);
 
   const entries = useMemo(() => {
     if (!campaign || !snapshot) return [];

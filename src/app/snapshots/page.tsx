@@ -2,14 +2,16 @@
 
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { useStore } from "@/components/providers/StoreProvider";
-import { CCFF00 } from "@/lib/collection";
+import {
+  fetchSnapshotById,
+  useStore,
+} from "@/components/providers/StoreProvider";
 import { downloadCsv } from "@/lib/csv";
 import { formatDate, formatNumber } from "@/lib/format";
-import type { Holder, HolderSnapshot } from "@/lib/holders/types";
+import type { HolderSnapshot, HolderSnapshotMeta } from "@/lib/holders/types";
 import { useState } from "react";
 
-function downloadSnapshot(snapshot: HolderSnapshot) {
+function snapshotToCsv(snapshot: HolderSnapshot) {
   downloadCsv(`hoodlist-snapshot-${snapshot.uniqueWallets}-wallets.csv`, [
     ["wallet", "ccff00_held", "token_ids"],
     ...snapshot.holders.map((holder) => [
@@ -21,37 +23,28 @@ function downloadSnapshot(snapshot: HolderSnapshot) {
 }
 
 export default function SnapshotsPage() {
-  const { snapshots, saveSnapshot } = useStore();
+  const { snapshots, takeSnapshot } = useStore();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const takeSnapshot = async () => {
+  const onTake = async () => {
     setBusy(true);
     setError(null);
     try {
-      const response = await fetch("/api/holders?refresh=1");
-      const json = (await response.json()) as {
-        holders?: Holder[];
-        uniqueWallets?: number;
-        totalNfts?: number;
-        error?: string;
-      };
-      if (!response.ok) throw new Error(json.error ?? "Snapshot failed");
-      saveSnapshot({
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-        label: `CCFF00 ${new Date().toLocaleString()}`,
-        source: "live",
-        collectionName: CCFF00.name,
-        contract: CCFF00.contract,
-        uniqueWallets: json.uniqueWallets ?? json.holders?.length ?? 0,
-        totalNfts: json.totalNfts ?? 0,
-        holders: json.holders ?? [],
-      });
+      await takeSnapshot();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Snapshot failed");
     } finally {
       setBusy(false);
+    }
+  };
+
+  const onDownload = async (meta: HolderSnapshotMeta) => {
+    setError(null);
+    try {
+      snapshotToCsv(await fetchSnapshotById(meta.id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Download failed");
     }
   };
 
@@ -61,12 +54,12 @@ export default function SnapshotsPage() {
         <div>
           <h1 className="display text-4xl">Snapshots</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-            Frozen CCFF00 holder lists live in this browser. Open one to look
-            through the wallets, or download the CSV. Use Exports if you want a
-            list shaped by a Hoodlist campaign.
+            Frozen CCFF00 holder lists are stored on Hoodlist and shared across
+            devices. Open one to look through the wallets, or download the CSV.
+            Use Exports if you want a list shaped by a Hoodlist campaign.
           </p>
         </div>
-        <Button onClick={() => void takeSnapshot()} disabled={busy}>
+        <Button onClick={() => void onTake()} disabled={busy}>
           {busy ? "Taking snapshot…" : "Take snapshot"}
         </Button>
       </div>
@@ -100,7 +93,7 @@ export default function SnapshotsPage() {
                 </Button>
                 <Button
                   variant="secondary"
-                  onClick={() => downloadSnapshot(snapshot)}
+                  onClick={() => void onDownload(snapshot)}
                 >
                   Download CSV
                 </Button>
