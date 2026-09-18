@@ -1,4 +1,4 @@
-import type { BlockchainId } from "@/lib/chains";
+import { ROBINHOOD_CHAIN } from "@/lib/chains";
 import type {
   CampaignRules,
   HoodlistCampaign,
@@ -11,7 +11,7 @@ export function emptyProject(): PartnerProject {
     campaignName: "",
     website: "",
     twitter: "",
-    blockchain: "ethereum" satisfies BlockchainId,
+    blockchain: ROBINHOOD_CHAIN.id,
     mintDate: "",
     totalSupply: "",
     logoDataUrl: "",
@@ -40,5 +40,17 @@ export function createDraftCampaign(): HoodlistCampaign {
     publishedAt: null,
     eligibleWalletCount: null,
     totalAllocation: null,
+  };
+}
+
+export function pinCampaignToRobinhood(
+  campaign: HoodlistCampaign,
+): HoodlistCampaign {
+  return {
+    ...campaign,
+    project: {
+      ...campaign.project,
+      blockchain: ROBINHOOD_CHAIN.id,
+    },
   };
 }

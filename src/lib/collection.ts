@@ -1,3 +1,5 @@
+import { ROBINHOOD_CHAIN } from "@/lib/chains";
+
 export const CCFF00 = {
   name: "CCFF00",
   parentBrand: "Hoodstreet Media",
@@ -5,4 +7,5 @@ export const CCFF00 = {
   contract: "0x505A22Ffed8d37ebE580FfD98d2Cdb0021189146",
   explorer: "https://robinhoodchain.blockscout.com",
   site: "https://hoodstreet.capital/ccff00",
+  chain: ROBINHOOD_CHAIN,
 } as const;

@@ -9,7 +9,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { createDraftCampaign } from "@/lib/campaign/defaults";
+import { createDraftCampaign, pinCampaignToRobinhood } from "@/lib/campaign/defaults";
 import type { HoodlistCampaign } from "@/lib/campaign/types";
 import { parseSnapshot } from "@/lib/holders/snapshot";
 import type { HolderSnapshot, HolderSnapshotMeta } from "@/lib/holders/types";
@@ -44,7 +44,9 @@ function persist(next: StoreState) {
 
 function load(): StoreState {
   return {
-    campaigns: readJson<HoodlistCampaign[]>(STORE_KEYS.campaigns, []),
+    campaigns: readJson<HoodlistCampaign[]>(STORE_KEYS.campaigns, []).map(
+      pinCampaignToRobinhood,
+    ),
     snapshots: [],
     draft: readJson<HoodlistCampaign | null>(STORE_KEYS.draft, null),
   };
@@ -139,22 +141,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setDraft = useCallback((draft: HoodlistCampaign) => {
-    persist({ ...memory, draft });
+    persist({ ...memory, draft: pinCampaignToRobinhood(draft) });
   }, []);
 
   const startDraft = useCallback(() => {
-    const draft = memory.draft ?? createDraftCampaign();
+    const draft = pinCampaignToRobinhood(
+      memory.draft ?? createDraftCampaign(),
+    );
     persist({ ...memory, draft });
     return draft;
   }, []);
 
   const saveCampaign = useCallback((campaign: HoodlistCampaign) => {
-    const existing = memory.campaigns.some((item) => item.id === campaign.id);
+    const next = pinCampaignToRobinhood(campaign);
+    const existing = memory.campaigns.some((item) => item.id === next.id);
     const campaigns = existing
       ? memory.campaigns.map((item) =>
-          item.id === campaign.id ? campaign : item,
+          item.id === next.id ? next : item,
         )
-      : [campaign, ...memory.campaigns];
+      : [next, ...memory.campaigns];
     persist({ ...memory, campaigns, draft: null });
   }, []);
 

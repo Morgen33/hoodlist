@@ -19,7 +19,7 @@ export const WIZARD_STEPS: {
     id: "project",
     number: 1,
     label: "Project",
-    question: "Which project is this Hoodlist for?",
+    question: "Which Robinhood project is this Hoodlist for?",
   },
   {
     id: "eligibility",

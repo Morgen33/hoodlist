@@ -73,7 +73,7 @@ export default function CampaignDetailPage({
         </div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <Info label="Blockchain" value={blockchainLabel(campaign.project.blockchain)} />
+        <Info label="Chain" value={blockchainLabel(campaign.project.blockchain)} />
         <Info label="Mint date" value={formatDate(campaign.project.mintDate)} />
         <Info
           label="Collection supply"

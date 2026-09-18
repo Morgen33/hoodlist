@@ -106,8 +106,9 @@ export default function HoldersPage() {
         <div>
           <h1 className="display text-4xl">CCFF00 Holders</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-            Each row is a wallet. If someone holds 10 CCFF00, they appear once
-            with a balance of 10 — never as 10 separate entries.
+            Each row is a wallet on Robinhood Chain. If someone holds 10 CCFF00,
+            they appear once with a balance of 10 — never as 10 separate
+            entries.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

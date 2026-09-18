@@ -56,17 +56,18 @@ export function DashboardHome() {
           Hoodlist
         </h1>
         <p className="mt-4 text-xl text-foreground">
-          Turn CCFF00 ownership into access.
+          Turn CCFF00 ownership into access on Robinhood Chain.
         </p>
         <p className="mt-3 max-w-2xl text-base leading-7 text-muted">
           Build holder-based allowlists, mint allocations, discounts, free
-          claims, raffles, and partner rewards using the CCFF00 holder
-          community.
+          claims, raffles, and partner rewards using CCFF00 holders on
+          Robinhood Chain. Campaigns, snapshots, and exports stay on this
+          chain only.
         </p>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Hoodlist is Hoodstreet Media&apos;s holder-based allowlist system.
-          Partner projects choose who qualifies, what they receive, and Hoodlist
-          builds the wallet list.
+          Hoodlist is Hoodstreet Media&apos;s holder-based allowlist system on
+          Robinhood Chain. Partner projects mint on Robinhood. Hoodlist builds
+          the CCFF00 wallet list.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button href="/create">Create Hoodlist</Button>

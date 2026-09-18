@@ -54,9 +54,10 @@ export default function SnapshotsPage() {
         <div>
           <h1 className="display text-4xl">Snapshots</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-            Frozen CCFF00 holder lists are stored on Hoodlist and shared across
-            devices. Open one to look through the wallets, or download the CSV.
-            Use Exports if you want a list shaped by a Hoodlist campaign.
+            Frozen CCFF00 holder lists on Robinhood Chain are stored on Hoodlist
+            and shared across devices. Open one to look through the wallets, or
+            download the CSV. Use Exports if you want a list shaped by a
+            Hoodlist campaign.
           </p>
         </div>
         <Button onClick={() => void onTake()} disabled={busy}>

@@ -23,10 +23,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {CCFF00.parentBrand}
           </p>
         </Link>
-        <div className="mt-6 flex items-center gap-2 rounded-xl border border-line px-3 py-2">
-          <span className="h-3 w-3 rounded-sm bg-accent" />
-          <span className="text-xs text-muted">Holder collection</span>
-          <span className="ml-auto font-mono text-xs">{CCFF00.name}</span>
+        <div className="mt-6 space-y-2 rounded-xl border border-line px-3 py-2">
+          <div className="flex items-center gap-2">
+            <span className="h-3 w-3 rounded-sm bg-accent" />
+            <span className="text-xs text-muted">Holder collection</span>
+            <span className="ml-auto font-mono text-xs">{CCFF00.name}</span>
+          </div>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-muted">
+            {CCFF00.chain.name} only
+          </p>
         </div>
         <nav className="mt-8 space-y-1">
           {NAV_ITEMS.map((item) => {

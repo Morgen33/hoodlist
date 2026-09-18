@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "npx --yes tsx --test src/lib/holders/aggregate.test.ts src/lib/holders/rpc.test.ts src/lib/holders/snapshot.test.ts src/lib/campaign/engine.test.ts"
+    "test": "npx --yes tsx --test src/lib/holders/aggregate.test.ts src/lib/holders/rpc.test.ts src/lib/holders/snapshot.test.ts src/lib/campaign/engine.test.ts src/lib/campaign/defaults.test.ts"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.0",

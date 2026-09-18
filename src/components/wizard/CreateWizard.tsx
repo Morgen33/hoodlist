@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Field, inputClass } from "@/components/ui/Field";
 import { useStore } from "@/components/providers/StoreProvider";
-import { BLOCKCHAINS } from "@/lib/chains";
+import { ROBINHOOD_CHAIN } from "@/lib/chains";
 import {
   allocationSummary,
   eligibilitySummary,
@@ -114,26 +114,11 @@ function ProjectStep({
         </Field>
       </div>
       <div className="grid gap-5 sm:grid-cols-3">
-        <Field label="Blockchain" hint="More chains can be added later.">
-          <select
-            className={inputClass}
-            value={project.blockchain}
-            onChange={(event) =>
-              onChange({
-                ...campaign,
-                project: {
-                  ...project,
-                  blockchain: event.target.value as typeof project.blockchain,
-                },
-              })
-            }
-          >
-            {BLOCKCHAINS.map((chain) => (
-              <option key={chain.id} value={chain.id}>
-                {chain.label}
-              </option>
-            ))}
-          </select>
+        <Field
+          label="Chain"
+          hint="Hoodlist only runs on Robinhood Chain. Partner mints and CCFF00 holders stay here."
+        >
+          <p className={inputClass}>{ROBINHOOD_CHAIN.name}</p>
         </Field>
         <Field label="Mint date">
           <input
@@ -683,6 +668,7 @@ function ReviewStep({ campaign }: { campaign: HoodlistCampaign }) {
   const rows = [
     ["Project", campaign.project.name || "—"],
     ["Campaign", campaign.project.campaignName || "—"],
+    ["Chain", ROBINHOOD_CHAIN.name],
     ["Who qualifies", eligibility ? eligibilitySummary(eligibility) : "—"],
     ["What they receive", rewardSummary(campaign.rules.reward)],
     ["How much / how many", allocationSummary(campaign.rules.allocation)],
@@ -710,8 +696,8 @@ function PublishStep({ campaign }: { campaign: HoodlistCampaign }) {
     <div className="space-y-4">
       <p className="text-sm leading-6 text-muted">
         Publishing {campaign.project.campaignName || "this Hoodlist"} makes it
-        available in Campaigns. You can still export the eligible wallet list
-        after a snapshot is attached.
+        available in Campaigns. It stays on Robinhood Chain. You can still
+        export the eligible wallet list after a snapshot is attached.
       </p>
       <ReviewStep campaign={campaign} />
     </div>

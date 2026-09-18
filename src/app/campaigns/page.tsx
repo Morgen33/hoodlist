@@ -16,7 +16,7 @@ export default function CampaignsPage() {
         <h1 className="display text-4xl">Campaigns</h1>
         <EmptyState
           title="No campaigns"
-          body="Published Hoodlists will appear here. Start by creating one for a partner project."
+          body="Published Hoodlists will appear here. Every campaign is a Robinhood Chain mint using CCFF00 holders."
           action={<Button href="/create">Create Hoodlist</Button>}
         />
       </div>
@@ -29,7 +29,7 @@ export default function CampaignsPage() {
         <div>
           <h1 className="display text-4xl">Campaigns</h1>
           <p className="mt-2 text-sm text-muted">
-            Every Hoodlist built for a partner project.
+            Every Hoodlist is a Robinhood Chain campaign for a partner mint.
           </p>
         </div>
         <Button href="/create">Create Hoodlist</Button>

@@ -8,13 +8,15 @@ export default function SettingsPage() {
       <div>
         <h1 className="display text-4xl">Settings</h1>
         <p className="mt-2 text-sm leading-6 text-muted">
-          Hoodlist currently reads CCFF00 ownership from Robinhood Chain. Holder
-          data is grouped by wallet before any campaign rules run.
+          Hoodlist currently reads CCFF00 ownership from Robinhood Chain.
+          Campaigns, snapshots, and exports stay on this chain. Holder data is
+          grouped by wallet before any campaign rules run.
         </p>
       </div>
       <div className="space-y-3 rounded-2xl border border-line bg-card p-5">
         <Row label="Product" value={CCFF00.productName} />
         <Row label="Parent brand" value={CCFF00.parentBrand} />
+        <Row label="Chain" value={`${CCFF00.chain.name} (${CCFF00.chain.chainId})`} />
         <Row label="Holder collection" value={CCFF00.name} />
         <Row label="Contract" value={CCFF00.contract} />
         <Row label="Collection site" value={CCFF00.site} />

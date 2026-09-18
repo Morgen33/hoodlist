@@ -86,8 +86,8 @@ export default function ExportsPage() {
       <div>
         <h1 className="display text-4xl">Exports</h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-          Build a wallet list from a Hoodlist&apos;s rules and a CCFF00 snapshot.
-          One row per wallet.
+          Build a wallet list from a Hoodlist&apos;s rules and a CCFF00 snapshot
+          on Robinhood Chain. One row per wallet.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
