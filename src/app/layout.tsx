@@ -23,7 +23,7 @@ const oswald = Oswald({
 export const metadata: Metadata = {
   title: "Hoodlist — Hoodstreet Media",
   description:
-    "Turn CCFF00 ownership into access on Robinhood Chain. Hoodlist is Hoodstreet Media's holder-based allowlist system.",
+    "Turn CCFF00 ownership into access on Robinhood Chain. Hoodlist is Hoodstreet Media's platform for holder-based allowlists.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

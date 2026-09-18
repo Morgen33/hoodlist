@@ -30,7 +30,7 @@ export function eligibilitySummary(rule: EligibilityRule): string {
 export function rewardSummary(rule: RewardRule): string {
   switch (rule.type) {
     case "allowlist_spot":
-      return "Hoodlist spot (allowlist access)";
+      return "Allowlist spot";
     case "free_mint":
       return `Free mint × ${rule.quantity}`;
     case "free_per_held":
@@ -55,9 +55,9 @@ export function allocationSummary(rule: AllocationRule): string {
     case "tiered":
       return "Holder tiers based on how many CCFF00 they hold";
     case "fcfs":
-      return `First come, first served — ${rule.maxSpots} Hoodlist spots`;
+      return `First come, first served — ${rule.maxSpots} allowlist spots`;
     case "capped":
-      return `Capped at ${rule.maxSpots} Hoodlist spots`;
+      return `Capped at ${rule.maxSpots} allowlist spots`;
     default:
       return assertNever(rule);
   }

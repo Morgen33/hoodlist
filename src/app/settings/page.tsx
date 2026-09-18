@@ -14,7 +14,7 @@ export default function SettingsPage() {
         </p>
       </div>
       <div className="space-y-3 rounded-2xl border border-line bg-card p-5">
-        <Row label="Product" value={CCFF00.productName} />
+        <Row label="Platform" value={CCFF00.productName} />
         <Row label="Parent brand" value={CCFF00.parentBrand} />
         <Row label="Chain" value={`${CCFF00.chain.name} (${CCFF00.chain.chainId})`} />
         <Row label="Holder collection" value={CCFF00.name} />

@@ -51,7 +51,7 @@ export default function ExportsPage() {
 
   const download = () => {
     if (!campaign) return;
-    downloadCsv(`${campaign.project.campaignName || "hoodlist"}.csv`, [
+    downloadCsv(`${campaign.project.campaignName || "allowlist"}.csv`, [
       ["wallet", "ccff00_held", "allocation", "token_ids"],
       ...entries.map((entry) => [
         entry.wallet,
@@ -74,8 +74,8 @@ export default function ExportsPage() {
         <h1 className="display text-4xl">Exports</h1>
         <EmptyState
           title="Nothing to export"
-          body="Create and publish a Hoodlist first, then export the eligible wallet list."
-          action={<Button href="/create">Create Hoodlist</Button>}
+          body="Create and publish a campaign first, then export the eligible wallet list."
+          action={<Button href="/create">Create campaign</Button>}
         />
       </div>
     );
@@ -86,12 +86,12 @@ export default function ExportsPage() {
       <div>
         <h1 className="display text-4xl">Exports</h1>
         <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
-          Build a wallet list from a Hoodlist&apos;s rules and a CCFF00 snapshot
+          Build a wallet list from a campaign&apos;s rules and a CCFF00 snapshot
           on Robinhood Chain. One row per wallet.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Hoodlist">
+        <Field label="Campaign">
           <select
             className={inputClass}
             value={selectedCampaignId}

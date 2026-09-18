@@ -57,7 +57,7 @@ export default function SnapshotsPage() {
             Frozen CCFF00 holder lists on Robinhood Chain are stored on Hoodlist
             and shared across devices. Open one to look through the wallets, or
             download the CSV. Use Exports if you want a list shaped by a
-            Hoodlist campaign.
+            campaign.
           </p>
         </div>
         <Button onClick={() => void onTake()} disabled={busy}>

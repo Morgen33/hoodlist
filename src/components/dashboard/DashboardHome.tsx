@@ -40,7 +40,7 @@ export function DashboardHome() {
           ? "Pull holders to load the live unique-wallet count"
           : "Unique wallets, not individual NFTs",
     },
-    { label: "Active Hoodlists", value: stats.activeHoodlists },
+    { label: "Active campaigns", value: stats.activeHoodlists },
     { label: "Partner Projects", value: stats.partnerProjects },
     { label: "Total Allocations", value: stats.totalAllocations },
     { label: "Total Wallets Rewarded", value: stats.totalWalletsRewarded },
@@ -65,12 +65,12 @@ export function DashboardHome() {
           chain only.
         </p>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
-          Hoodlist is Hoodstreet Media&apos;s holder-based allowlist system on
-          Robinhood Chain. Partner projects mint on Robinhood. Hoodlist builds
-          the CCFF00 wallet list.
+          Hoodlist is Hoodstreet Media&apos;s platform for holder-based
+          allowlists on Robinhood Chain. Partner projects mint on Robinhood.
+          Hoodlist builds the CCFF00 wallet list.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Button href="/create">Create Hoodlist</Button>
+          <Button href="/create">Create campaign</Button>
           <Button href="/campaigns" variant="secondary">
             View Campaigns
           </Button>
@@ -100,9 +100,9 @@ export function DashboardHome() {
 
       {campaigns.length === 0 ? (
         <EmptyState
-          title="No Hoodlists yet"
+          title="No campaigns yet"
           body="Create a campaign to turn CCFF00 holders into mint access, rewards, or raffle entries."
-          action={<Button href="/create">Create Hoodlist</Button>}
+          action={<Button href="/create">Create campaign</Button>}
         />
       ) : (
         <section>

@@ -16,8 +16,8 @@ export default function CampaignsPage() {
         <h1 className="display text-4xl">Campaigns</h1>
         <EmptyState
           title="No campaigns"
-          body="Published Hoodlists will appear here. Every campaign is a Robinhood Chain mint using CCFF00 holders."
-          action={<Button href="/create">Create Hoodlist</Button>}
+          body="Published campaigns will appear here. Every campaign is a Robinhood Chain mint using CCFF00 holders."
+          action={<Button href="/create">Create campaign</Button>}
         />
       </div>
     );
@@ -29,10 +29,10 @@ export default function CampaignsPage() {
         <div>
           <h1 className="display text-4xl">Campaigns</h1>
           <p className="mt-2 text-sm text-muted">
-            Every Hoodlist is a Robinhood Chain campaign for a partner mint.
+            Partner mint campaigns on Robinhood Chain, built with CCFF00 holders.
           </p>
         </div>
-        <Button href="/create">Create Hoodlist</Button>
+        <Button href="/create">Create campaign</Button>
       </div>
       <div className="overflow-hidden rounded-2xl border border-line">
         {campaigns.map((campaign) => (

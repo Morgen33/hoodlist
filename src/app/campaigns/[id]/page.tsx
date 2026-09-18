@@ -31,7 +31,7 @@ export default function CampaignDetailPage({
     return (
       <EmptyState
         title="Campaign not found"
-        body="This Hoodlist is not in local storage on this browser."
+        body="This campaign is not in local storage on this browser."
         action={<Button href="/campaigns">Back to campaigns</Button>}
       />
     );

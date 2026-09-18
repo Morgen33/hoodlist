@@ -355,7 +355,7 @@ function RewardStep({
     <div className="grid gap-3">
       <OptionCard
         selected={rule.type === "allowlist_spot"}
-        title="Hoodlist spot"
+        title="Allowlist spot"
         body="Allowlist access to the partner mint."
         onSelect={() => setRule({ type: "allowlist_spot" })}
       />
@@ -491,7 +491,7 @@ function AllocationStep({
       <div className="rounded-2xl border border-accent bg-elevated px-4 py-4">
         <p className="text-sm font-medium">1 free mint per CCFF00 held</p>
         <p className="mt-1 text-sm text-muted">
-          This Hoodlist already matches free mints to CCFF00 balance. A wallet
+          This campaign already matches free mints to CCFF00 balance. A wallet
           with 3 CCFF00 gets 3 free. A wallet with 5 gets 5.
         </p>
       </div>
@@ -507,7 +507,7 @@ function AllocationStep({
       <OptionCard
         selected={rule.type === "one_per_wallet"}
         title="One per wallet"
-        body="Every qualifying wallet gets a single Hoodlist allocation."
+        body="Every qualifying wallet gets a single allowlist allocation."
         onSelect={() => setRule({ type: "one_per_wallet" })}
       />
       <OptionCard
@@ -534,12 +534,12 @@ function AllocationStep({
       <OptionCard
         selected={rule.type === "fcfs"}
         title="First come, first served"
-        body="A limited number of Hoodlist spots, filled in order."
+        body="A limited number of allowlist spots, filled in order."
         onSelect={() => setRule({ type: "fcfs", maxSpots: 500 })}
       />
       <OptionCard
         selected={rule.type === "capped"}
-        title="Capped Hoodlist"
+        title="Capped allowlist"
         body="Limit total spots while still ranking by holder size."
         onSelect={() => setRule({ type: "capped", maxSpots: 1000 })}
       />
@@ -560,7 +560,7 @@ function AllocationStep({
         </Field>
       ) : null}
       {rule.type === "fcfs" || rule.type === "capped" ? (
-        <Field label="Hoodlist spots">
+        <Field label="Allowlist spots">
           <input
             type="number"
             min={1}
@@ -664,7 +664,7 @@ function VerificationStep({
           hint={
             snapshots.length === 0
               ? "No snapshot yet. You can publish now and attach one later from Snapshots."
-              : "Choose which frozen holder list this Hoodlist uses."
+              : "Choose which frozen holder list this campaign uses."
           }
         >
           <select
@@ -722,7 +722,7 @@ function PublishStep({ campaign }: { campaign: HoodlistCampaign }) {
   return (
     <div className="space-y-4">
       <p className="text-sm leading-6 text-muted">
-        Publishing {campaign.project.campaignName || "this Hoodlist"} makes it
+        Publishing {campaign.project.campaignName || "this campaign"} makes it
         available in Campaigns. It stays on Robinhood Chain. You can still
         export the eligible wallet list after a snapshot is attached.
       </p>
@@ -781,7 +781,7 @@ export function CreateWizard() {
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
         <p className="text-xs uppercase tracking-[0.22em] text-muted">
-          Create Hoodlist
+          Create campaign
         </p>
         <h1 className="display mt-2 text-4xl">{step.question}</h1>
       </div>
@@ -830,7 +830,7 @@ export function CreateWizard() {
               router.push(`/campaigns/${published.id}`);
             }}
           >
-            Publish Hoodlist
+            Publish campaign
           </Button>
         ) : (
           <Button
