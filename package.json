@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "npx --yes tsx --test src/lib/holders/aggregate.test.ts src/lib/campaign/engine.test.ts"
+    "test": "npx --yes tsx --test src/lib/holders/aggregate.test.ts src/lib/holders/rpc.test.ts src/lib/campaign/engine.test.ts"
   },
   "dependencies": {
     "next": "16.3.5",

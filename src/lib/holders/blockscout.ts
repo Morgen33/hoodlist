@@ -44,7 +44,10 @@ function toQuery(params: Record<string, string | number | null | undefined>): st
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${explorerBase()}${path}`, {
-    headers: { accept: "application/json" },
+    headers: {
+      accept: "application/json",
+      "user-agent": "Hoodlist/1.0 (https://hoodlist-six.vercel.app)",
+    },
     cache: "no-store",
   });
   if (!response.ok) {
