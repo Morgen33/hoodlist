@@ -96,6 +96,8 @@ export function rewardUnitsForHolder(
       return allocation;
     case "free_mint":
       return allocation * reward.quantity;
+    case "free_per_held":
+      return allocation;
     case "raffle_entry":
       return (
         allocation *
@@ -123,7 +125,10 @@ export function buildAllowlist(
 
   for (const holder of qualified) {
     if (remaining !== null && remaining <= 0) break;
-    let allocation = allocationForHolder(holder, rules.allocation);
+    let allocation =
+      rules.reward.type === "free_per_held"
+        ? holder.balance
+        : allocationForHolder(holder, rules.allocation);
     if (remaining !== null) {
       allocation = Math.min(allocation, remaining);
       remaining -= allocation;

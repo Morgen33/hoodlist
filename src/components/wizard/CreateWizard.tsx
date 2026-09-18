@@ -366,6 +366,21 @@ function RewardStep({
         onSelect={() => setRule({ type: "free_mint", quantity: 1 })}
       />
       <OptionCard
+        selected={rule.type === "free_per_held"}
+        title="1 free mint per CCFF00 held"
+        body="Hold 3 CCFF00, get 3 free. Hold 5, get 5. The free mint count matches how many CCFF00 the wallet holds."
+        onSelect={() =>
+          onChange({
+            ...campaign,
+            rules: {
+              ...campaign.rules,
+              reward: { type: "free_per_held" },
+              allocation: { type: "per_nft", unitsPerNft: 1 },
+            },
+          })
+        }
+      />
+      <OptionCard
         selected={rule.type === "discount"}
         title="Discounted mint"
         body="A percentage off the public mint price."
@@ -470,6 +485,18 @@ function AllocationStep({
   const rule = campaign.rules.allocation;
   const setRule = (allocation: AllocationRule) =>
     onChange({ ...campaign, rules: { ...campaign.rules, allocation } });
+
+  if (campaign.rules.reward.type === "free_per_held") {
+    return (
+      <div className="rounded-2xl border border-accent bg-elevated px-4 py-4">
+        <p className="text-sm font-medium">1 free mint per CCFF00 held</p>
+        <p className="mt-1 text-sm text-muted">
+          This Hoodlist already matches free mints to CCFF00 balance. A wallet
+          with 3 CCFF00 gets 3 free. A wallet with 5 gets 5.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-3">

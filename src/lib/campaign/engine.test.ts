@@ -26,6 +26,16 @@ test("per NFT allocation uses wallet balance", () => {
   assert.equal(list[0]?.allocation, 20);
 });
 
+test("free per CCFF00 held matches free mints to wallet balance", () => {
+  const rules = defaultRules();
+  rules.reward = { type: "free_per_held" };
+  rules.allocation = { type: "one_per_wallet" };
+  const list = buildAllowlist(holders, rules);
+  assert.equal(list[0]?.allocation, 10);
+  assert.equal(list[1]?.allocation, 2);
+  assert.equal(list[2]?.allocation, 1);
+});
+
 test("capped campaigns limit how many wallets get in", () => {
   const rules = defaultRules();
   rules.allocation = { type: "capped", maxSpots: 2 };

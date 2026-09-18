@@ -12,6 +12,7 @@ export type EligibilityRule =
 export type RewardRule =
   | { type: "allowlist_spot" }
   | { type: "free_mint"; quantity: number }
+  | { type: "free_per_held" }
   | { type: "discount"; percent: number }
   | {
       type: "raffle_entry";

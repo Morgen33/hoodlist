@@ -33,6 +33,8 @@ export function rewardSummary(rule: RewardRule): string {
       return "Hoodlist spot (allowlist access)";
     case "free_mint":
       return `Free mint × ${rule.quantity}`;
+    case "free_per_held":
+      return "1 free mint per CCFF00 held";
     case "discount":
       return `${rule.percent}% discounted mint`;
     case "raffle_entry":
